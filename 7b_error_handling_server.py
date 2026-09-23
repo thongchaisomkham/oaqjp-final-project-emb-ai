@@ -1,6 +1,6 @@
 """Flask server for Emotion Detection web application."""
 from flask import Flask, render_template, request
-from EmotionDetection.emotion_detection import emotion_detector
+from emotion_detection import emotion_detector
 
 app = Flask(__name__)
 
@@ -16,19 +16,24 @@ def sent_analyzer():
     """Analyze the emotion of the input text and return the result."""
     text_to_analyze = request.args.get("textToAnalyze")
 
+    # เรียกใช้ฟังก์ชันวิเคราะห์อารมณ์
     response = emotion_detector(text_to_analyze)
 
+    # ดึงค่า dominant_emotion เพื่อนำมาตรวจสอบความถูกต้องของข้อมูล
     dominant_emotion = response.get("dominant_emotion")
 
+    # กรณีส่งข้อความว่างเปล่า หรือเกิด Error (dominant_emotion เป็น None)
     if dominant_emotion is None:
         return "Invalid text! Please try again!"
 
+    # ดึงคะแนนอารมณ์แต่ละประเภท
     anger = response.get("anger")
     disgust = response.get("disgust")
     fear = response.get("fear")
     joy = response.get("joy")
     sadness = response.get("sadness")
 
+    # ส่งข้อความผลลัพธ์การวิเคราะห์กลับไปยังหน้าเว็บ
     return (
         f"For the given statement, the system response is "
         f"'anger': {anger}, 'disgust': {disgust}, 'fear': {fear}, "
